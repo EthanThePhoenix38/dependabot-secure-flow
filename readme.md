@@ -1,3 +1,4 @@
+9
 <div align="center">
   <img src="./banner.png" width="600px" alt="DependabotSecureFlow Banner" style="border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.5);">
   <br><br>
@@ -6,11 +7,9 @@
   [![GitHub Marketplace](https://img.shields.io/badge/Marketplace-Dependabot%20Secure%20Flow-blue?style=for-the-badge&logo=github)](https://github.com/marketplace/actions/dependabotsecureflow)
   [![Build Status](https://img.shields.io/github/actions/workflow/status/EthanThePhoenix38/dependabot-secure-flow/dependabot-secure-flow.yaml?style=for-the-badge)](https://github.com/EthanThePhoenix38/dependabot-secure-flow/actions)
   [![Dependabot](https://img.shields.io/badge/Dependabot-Active-025E8C?style=for-the-badge&logo=dependabot&logoColor=white)](https://github.com/EthanThePhoenix38/dependabot-secure-flow/network/dependencies)
-  [![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)](https://github.com/EthanThePhoenix38/dependabot-secure-flow)  [![Tests](https://img.shields.io/badge/Tests-Passing-green?style=for-the-
-    [![MIT License](https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge)](https://choosealicense.com/licenses/mit/)
-      [![GitHub release](https://img.shields.io/github/v/release/EthanThePhoenix38/dependabot-secure-flow?style=for-the-badge)](https://github.com/EthanThePhoenix38/dependabot-secure-flow/releases)
-        [![Security](https://img.shields.io/badge/Security-Hardened-yellow?style=for-the-badge&logo=security)](https://github.com/EthanThePhoenix38/dependabot-secure-flow/security)badge&logo=github-actions&logoColor=white)](https://github.com/EthanThePhoenix38/dependabot-secure-flow/actions)
+  [![YAML](https://img.shields.io/badge/YAML-CB171E?style=for-the-badge&logo=yaml&logoColor=white)](https://github.com/EthanThePhoenix38/dependabot-secure-flow)  [![Tests](https://img.shields.io/badge/Tests-Passing-green?style=for-the-badge&logo=github-actions&logoColor=white)](https://github.com/EthanThePhoenix38/dependabot-secure-flow/actions)  [![MIT License](https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge)](https://choosealicense.com/licenses/mit/)  [![GitHub release](https://img.shields.io/github/v/release/EthanThePhoenix38/dependabot-secure-flow?style=for-the-badge)](https://github.com/EthanThePhoenix38/dependabot-secure-flow/releases)  [![Security](https://img.shields.io/badge/Security-Hardened-yellow?style=for-the-badge&logo=security)](https://github.com/EthanThePhoenix38/dependabot-secure-flow/security)
   [![RGPD](https://img.shields.io/badge/RGPD-Compliant-blue?style=for-the-badge&logo=gdpr&logoColor=white)](https://github.com/EthanThePhoenix38/dependabot-secure-flow)
+
 </div>
 
 # [DependabotSecureFlow](https://github.com/EthanThePhoenix38/dependabot-secure-flow)

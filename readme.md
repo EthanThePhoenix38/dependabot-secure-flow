@@ -189,9 +189,11 @@ If this action helps secure your projects, support the development:
 In exchange, I will add a link to your GitHub profile in the Contributors section.
 
 Or you can:
-- Star this repository
-- Fork it to customize for your needs
-- Report issues to help improve it
+- ⭐ **Star this repository**
+- 🔀 **Fork it** to customize for your needs
+- 🐛 **Report issues** to help improve it- ⭐ **Star this repository**
+- 🔀 **Fork it** to customize for your needs
+- 🐛 **Report issues** to help improve it
 
 ## Professional Page
 [https://thephoenixagency.github.io](https://thephoenixagency.github.io)

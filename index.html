@@ -1,17 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DependabotSecureFlow - Documentation</title>
     <!-- GitHub Markdown Light CSS -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.2.0/github-markdown-light.min.css">
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.2.0/github-markdown-light.min.css">
     <style>
         :root {
             /* Netlify-inspired Palette */
             --teal-brand: #00AD9F;
             --teal-dark: #0e1e25;
-            --bg-body: #f3f4f6; /* Gray-100 */
+            --bg-body: #f3f4f6;
+            /* Gray-100 */
             --bg-card: #ffffff;
             --text-primary: #1e293b;
         }
@@ -63,6 +66,7 @@
             color: var(--teal-brand);
             text-decoration: none;
         }
+
         .markdown-body a:hover {
             text-decoration: underline;
         }
@@ -77,6 +81,7 @@
             color: #64748b;
             font-family: monospace;
         }
+
         .spinner {
             border: 4px solid #e2e8f0;
             border-top: 4px solid var(--teal-brand);
@@ -86,80 +91,93 @@
             animation: spin 1s linear infinite;
             margin-bottom: 20px;
         }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
         /* Image responsiveness */
-        img { max-width: 100%; border-radius: 6px; }
-        
+        img {
+            max-width: 100%;
+            border-radius: 6px;
+        }
     </style>
     <!-- Marked for Markdown Parsing -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <!-- DOMPurify for Security -->
     <script src="https://cdn.jsdelivr.net/npm/dompurify/dist/purify.min.js"></script>
 </head>
+
 <body>
 
-<div class="top-bar"></div>
+    <div class="top-bar"></div>
 
-<div class="container">
-    <div id="loader">
-        <div class="spinner"></div>
-        <p>Fetching SecureFlow Documentation...</p>
+    <div class="container">
+        <div id="loader">
+            <div class="spinner"></div>
+            <p>Fetching SecureFlow Documentation...</p>
+        </div>
+        <div id="content" class="markdown-body" style="display:none;"></div>
     </div>
-    <div id="content" class="markdown-body" style="display:none;"></div>
-</div>
 
-<script>
-    // CONFIGURATION
-    // -------------------------------------------------------
-    const REPO_OWNER = 'EthanThePhoenix38';
-    const REPO_NAME = 'dependabot-secure-flow'; 
-    const BRANCH = 'main'; 
-    const FILE_PATH = 'DependabotSecureFlow.md'; 
-    // -------------------------------------------------------
+    <script>
+        // CONFIGURATION
+        // -------------------------------------------------------
+        const REPO_OWNER = 'EthanThePhoenix38';
+        const REPO_NAME = 'dependabot-secure-flow';
+        const BRANCH = 'main';
+        const FILE_PATH = 'readme.md';
+        // -------------------------------------------------------
 
-    async function loadContent() {
-        // ... (Le script JS reste identique à la version précédente) ...
-        const apiUrl = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}`;
-        
-        try {
-            const response = await fetch(apiUrl, {
-                headers: { 'Accept': 'application/vnd.github.raw' }
-            });
-            
-            if (!response.ok) {
-                if (response.status === 404) throw new Error('File not found. Check repo/branch settings.');
-                throw new Error(`GitHub API Error: ${response.statusText}`);
-            }
+        async function loadContent() {
+            // ... (Le script JS reste identique à la version précédente) ...
+            const apiUrl = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}`;
 
-            const markdown = await response.text();
-            const rawBaseUrl = `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/${BRANCH}/`;
-            
-            let processedMarkdown = markdown.replace(/src="\.\/banner\.png"/g, `src="${rawBaseUrl}banner.png"`);
-            processedMarkdown = processedMarkdown.replace(/src="banner\.png"/g, `src="${rawBaseUrl}banner.png"`);
-            processedMarkdown = processedMarkdown.replace(/\!\[(.*?)\]\(\.\/banner\.png\)/g, `![$1](${rawBaseUrl}banner.png)`);
+            try {
+                const response = await fetch(apiUrl, {
+                    headers: { 'Accept': 'application/vnd.github.raw' }
+                });
 
-            const html = marked.parse(processedMarkdown);
-            const sanitizedHtml = DOMPurify.sanitize(html);
+                if (!response.ok) {
+                    if (response.status === 404) throw new Error('File not found. Check repo/branch settings.');
+                    throw new Error(`GitHub API Error: ${response.statusText}`);
+                }
 
-            const contentDiv = document.getElementById('content');
-            contentDiv.innerHTML = sanitizedHtml;
-            document.getElementById('loader').style.display = 'none';
-            contentDiv.style.display = 'block';
+                const markdown = await response.text();
+                const rawBaseUrl = `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/${BRANCH}/`;
 
-        } catch (error) {
-            document.getElementById('loader').innerHTML = `
+                let processedMarkdown = markdown.replace(/src="\.\/banner\.png"/g, `src="${rawBaseUrl}banner.png"`);
+                processedMarkdown = processedMarkdown.replace(/src="banner\.png"/g, `src="${rawBaseUrl}banner.png"`);
+                processedMarkdown = processedMarkdown.replace(/\!\[(.*?)\]\(\.\/banner\.png\)/g, `![$1](${rawBaseUrl}banner.png)`);
+
+                const html = marked.parse(processedMarkdown);
+                const sanitizedHtml = DOMPurify.sanitize(html);
+
+                const contentDiv = document.getElementById('content');
+                contentDiv.innerHTML = sanitizedHtml;
+                document.getElementById('loader').style.display = 'none';
+                contentDiv.style.display = 'block';
+
+            } catch (error) {
+                document.getElementById('loader').innerHTML = `
                 <div style="color: #ef4444; text-align: center;">
                     <h3>⚠️ Error Loading Documentation</h3>
                     <p>${error.message}</p>
                     <small>Failed to fetch from: <code>${REPO_OWNER}/${REPO_NAME}/${FILE_PATH}</code></small>
                 </div>
             `;
+            }
         }
-    }
 
-    loadContent();
-</script>
+        loadContent();
+    </script>
 
 </body>
+
 </html>

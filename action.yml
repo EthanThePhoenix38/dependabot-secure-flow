@@ -1,0 +1,58 @@
+name: 'Dependabot Silent Guardian'
+description: 'Validates dependency updates via build tests and auto-closes failing PRs to maintain a silent, green-only pipeline.'
+author: 'EthanThePhoenix38'
+branding:
+  icon: 'shield'
+  color: 'green'
+
+inputs:
+  github-token:
+    description: 'Token to manage PRs (GITHUB_TOKEN)'
+    required: true
+  node-version:
+    description: 'Node version to use'
+    required: false
+    default: '20'
+  test-command:
+    description: 'Command to run for validation'
+    required: false
+    default: 'npm install && npm run build'
+
+outputs:
+  should-merge:
+    description: "Returns 'true' if validation passed, 'false' if auto-correction occurred."
+    value: ${{ steps.outcome.outputs.result }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Setup Node
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ inputs.node-version }}
+
+    - name: Validation (Silence is Golden)
+      id: validate
+      shell: bash
+      continue-on-error: true
+      run: ${{ inputs.test-command }}
+
+    - name: Auto-Correction
+      id: outcome
+      shell: bash
+      if: always()
+      run: |
+        if [ "${{ steps.validate.outcome }}" == "failure" ]; then
+          echo "::notice::Validation failed. Auto-correcting by rejecting PR."
+          
+          if [ "${{ github.event.pull_request.number }}" != "" ]; then
+             gh pr edit ${{ github.event.pull_request.number }} --add-label "skipped-vulnerability"
+             gh pr close ${{ github.event.pull_request.number }} --comment "🚫 **Auto-Correction**: Build validation failed. Closing PR to prevent regression." --delete-branch || true
+          fi
+          
+          echo "result=false" >> $GITHUB_OUTPUT
+        else
+          echo "result=true" >> $GITHUB_OUTPUT
+        fi
+      env:
+        GH_TOKEN: ${{ inputs.github-token }}

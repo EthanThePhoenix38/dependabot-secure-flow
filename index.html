@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en" data-color-mode="dark" data-dark-theme="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DependabotSecureFlow - Documentation</title>
+    <!-- GitHub Markdown CSS for the authentic look -->
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.2.0/github-markdown-dark.min.css">
+    <style>
+        body {
+            background-color: #0d1117;
+            /* GitHub Dark Dimmed bg */
+            color: #c9d1d9;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1012px;
+            padding: 40px 20px;
+        }
+
+        .markdown-body {
+            box-sizing: border-box;
+            min-width: 200px;
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 45px;
+            background-color: #0d1117;
+            /* Transparent/Match body for seamless look */
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Loading spinner styling */
+        #loader {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 50vh;
+            color: #8b949e;
+            font-family: monospace;
+        }
+
+        .spinner {
+            border: 4px solid #30363d;
+            border-top: 4px solid #238636;
+            /* GitHub Green */
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #30363d;
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #0d1117;
+        }
+
+        /* Image responsiveness */
+        img {
+            max-width: 100%;
+        }
+
+        /* Badge alignment fix in markdown */
+        p a img {
+            vertical-align: middle;
+        }
+    </style>
+    <!-- Marked for Markdown Parsing -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <!-- DOMPurify for Security -->
+    <script src="https://cdn.jsdelivr.net/npm/dompurify/dist/purify.min.js"></script>
+</head>
+
+<body>
+
+    <div class="container">
+        <div id="loader">
+            <div class="spinner"></div>
+            <p>Fetching SecureFlow Documentation...</p>
+        </div>
+        <div id="content" class="markdown-body" style="display:none;"></div>
+    </div>
+
+    <script>
+        // CONFIGURATION
+        // -------------------------------------------------------
+        // Point this to your future repo 'dependabot-secure-flow' once created.
+        // Currently pointing to GatsbyBlog/DependabotSecureFlow.md as source.
+        const REPO_OWNER = 'EthanThePhoenix38';
+        const REPO_NAME = 'GatsbyBlog';
+        const BRANCH = 'master'; // Assumed master, change to 'main' if needed
+        const FILE_PATH = 'DependabotSecureFlow.md';
+        // -------------------------------------------------------
+
+        async function loadContent() {
+            const apiUrl = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}`;
+
+            try {
+                // Fetch raw markdown from GitHub API
+                const response = await fetch(apiUrl, {
+                    headers: { 'Accept': 'application/vnd.github.raw' }
+                });
+
+                if (!response.ok) {
+                    if (response.status === 404) throw new Error('File not found. Check repo/branch settings.');
+                    throw new Error(`GitHub API Error: ${response.statusText}`);
+                }
+
+                const markdown = await response.text();
+
+                // PRE-PROCESS MARKDOWN
+                // We need to rewrite relative paths (like ./banner.png) to absolute raw GitHub URLs
+                // so they render correctly in this standalone HTML file.
+                const rawBaseUrl = `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/${BRANCH}/`;
+
+                // Replace ./banner.png or banner.png with absolute path
+                let processedMarkdown = markdown.replace(/src="\.\/banner\.png"/g, `src="${rawBaseUrl}banner.png"`);
+                processedMarkdown = processedMarkdown.replace(/src="banner\.png"/g, `src="${rawBaseUrl}banner.png"`);
+                processedMarkdown = processedMarkdown.replace(/\!\[(.*?)\]\(\.\/banner\.png\)/g, `![$1](${rawBaseUrl}banner.png)`);
+
+                // Parse Markdown to HTML
+                const html = marked.parse(processedMarkdown);
+
+                // Sanitize HTML (Security Best Practice)
+                const sanitizedHtml = DOMPurify.sanitize(html);
+
+                // Inject into DOM
+                const contentDiv = document.getElementById('content');
+                contentDiv.innerHTML = sanitizedHtml;
+
+                // Show content, hide loader
+                document.getElementById('loader').style.display = 'none';
+                contentDiv.style.display = 'block';
+
+            } catch (error) {
+                document.getElementById('loader').innerHTML = `
+                <div style="color: #f85149; text-align: center;">
+                    <h3>⚠️ Error Loading Documentation</h3>
+                    <p>${error.message}</p>
+                    <small>Verify that the repository is public and the file exists at <code>${FILE_PATH}</code></small>
+                </div>
+            `;
+            }
+        }
+
+        // Initialize
+        loadContent();
+    </script>
+
+</body>
+
+</html>

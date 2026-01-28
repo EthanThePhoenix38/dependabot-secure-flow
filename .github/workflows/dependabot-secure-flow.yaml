@@ -1,4 +1,4 @@
-name: Auto Dependencies to Securite Branch
+name: DependabotSecureFlow
 
 on:
   pull_request:

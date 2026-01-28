@@ -1,4 +1,4 @@
-name: 'Dependabot Silent Guardian'
+name: 'DependabotSecureFlow'
 description: 'Validates dependency updates via build tests and auto-closes failing PRs to maintain a silent, green-only pipeline.'
 author: 'EthanThePhoenix38'
 branding:

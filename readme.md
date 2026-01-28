@@ -133,3 +133,15 @@ jobs:
           git merge origin/${{ github.head_ref }} --no-edit
           git push origin securite
 ```
+
+## Configuration Options
+
+| Input | Description | Required | Default |
+| :--- | :--- | :--- | :--- |
+| `github-token` | Token to manage PRs (GITHUB_TOKEN) | Yes | N/A |
+| `node-version` | Node versions to use | No | 20 |
+| `test-command` | Command to run for validation | No | `npm install && npm run build` |
+
+## Professional Page
+
+[https://thephoenixagency.github.io](https://thephoenixagency.github.io)

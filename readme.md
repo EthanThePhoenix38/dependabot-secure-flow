@@ -2,8 +2,13 @@
   <img src="./banner.png" width="600px" alt="DependabotSecureFlow Banner" style="border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.5);">
   <br><br>
   
-  [![Use this template](https://img.shields.io/badge/Use%20this%20Template-2ea44f?style=for-the-badge&logo=github)](https://github.com/EthanThePhoenix38/GatsbyBlog/generate)
+  [![Use this template](https://img.shields.io/badge/Use%20this%20Template-2ea44f?style=for-the-badge&logo=github)](https://github.com/EthanThePhoenix38/dependabot-secure-flow/generate)
   [![GitHub Marketplace](https://img.shields.io/badge/Marketplace-Dependabot%20Secure%20Flow-blue?style=for-the-badge&logo=github)](https://github.com/marketplace/actions/dependabot-secure-flow)
+  [![Build Status](https://img.shields.io/github/actions/workflow/status/EthanThePhoenix38/dependabot-secure-flow/dependabot-secure-flow.yaml?style=for-the-badge)](https://github.com/EthanThePhoenix38/dependabot-secure-flow/actions)
+  [![Dependabot](https://img.shields.io/badge/Dependabot-Active-025E8C?style=for-the-badge&logo=dependabot&logoColor=white)](https://github.com/EthanThePhoenix38/dependabot-secure-flow/network/dependencies)
+  [![Languages](https://img.shields.io/github/languages/count/EthanThePhoenix38/dependabot-secure-flow?style=for-the-badge&color=blue)](https://github.com/EthanThePhoenix38/dependabot-secure-flow)
+  [![Tests](https://img.shields.io/badge/Tests-Passing-green?style=for-the-badge&logo=github-actions&logoColor=white)](https://github.com/EthanThePhoenix38/dependabot-secure-flow/actions)
+  [![RGPD](https://img.shields.io/badge/RGPD-Compliant-blue?style=for-the-badge&logo=gdpr&logoColor=white)](https://github.com/EthanThePhoenix38/dependabot-secure-flow)
 </div>
 
 # DependabotSecureFlow
@@ -61,8 +66,25 @@ This workflow implements a rare and advanced DevOps pattern known as a **Self-He
 
 This is a **Workflow Template**. You do not need to install anything with npm to use it. You simply add the configuration file to your repository.
 
-1.  Create a file named `.github/workflows/dependabot-secure-flow.yml`.
-2.  Copy the code below into that file.
+1.  **Prerequisite**: Create a file named `.github/dependabot.yml` to enable Dependabot scanning:
+    ```yaml
+    version: 2
+    updates:
+      - package-ecosystem: "npm"
+        directory: "/"
+        schedule:
+          interval: "daily"
+    ```
+2.  **Prerequisite**: Create a `CHANGELOG.md` file (required for auto-updates):
+    ```markdown
+    # Changelog
+    
+    ## [Unreleased]
+    
+    ### Added
+    ```
+3.  Create a file named `.github/workflows/dependabot-secure-flow.yml`.
+4.  Copy the code below into that file.
 
 ### Critical Security Requirement: Secrets
 **Do not hardcode email addresses in the workflow file.** Hardcoded emails can be detected by security scanners and inadvertently exposed.

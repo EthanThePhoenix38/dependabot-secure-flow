@@ -1,0 +1,8 @@
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    # Optionnel : définir une limite pour ne pas être inondé
+    open-pull-requests-limit: 10

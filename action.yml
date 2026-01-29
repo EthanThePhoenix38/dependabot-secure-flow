@@ -1,5 +1,5 @@
 name: 'Dependabot Secure Validation'
-description: 'Validates and auto-corrects dependency updates by running build checks'
+description: 'Validates that dependency updates do not break the build.'
 author: 'EthanThePhoenix38'
 branding:
   icon: 'shield'
@@ -7,13 +7,13 @@ branding:
 
 inputs:
   node-version:
-    description: 'Node.js version to use for validation'
+    description: 'Node.js version to use'
     required: false
     default: '20'
   build-command:
-    description: 'Command to run to validate the build'
+    description: 'Command to validate the project'
     required: false
-    default: 'npm run build'
+    default: 'npm install && npm run build'
 
 runs:
   using: "composite"
@@ -23,10 +23,6 @@ runs:
       with:
         node-version: ${{ inputs.node-version }}
 
-    - name: Install Dependencies
-      shell: bash
-      run: npm install --prefer-offline --no-audit
-
-    - name: Validate Build
+    - name: Run Build Validation
       shell: bash
       run: ${{ inputs.build-command }}

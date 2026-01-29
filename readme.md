@@ -1,4 +1,3 @@
-9
 <div align="center">
   <img src="./banner.png" width="600px" alt="DependabotSecureFlow Banner" style="border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.5);">
   <br><br>

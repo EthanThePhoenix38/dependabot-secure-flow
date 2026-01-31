@@ -4,7 +4,7 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
-    target-branch: "main"   # <--- J'ai mis 'main' ici pour votre template
+    target-branch: "main"
     open-pull-requests-limit: 10
     labels:
       - "dependencies"

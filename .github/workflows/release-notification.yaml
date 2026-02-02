@@ -1,3 +1,4 @@
+# dummy change for sync verification
 name: Release Notification
 
 on:
@@ -6,13 +7,13 @@ on:
 
 permissions:
   contents: read
-  issues: write
+  discussions: write
 
 jobs:
   notify-release:
     runs-on: ubuntu-latest
     steps:
-      - name: Create Release Announcement Issue
+      - name: Create Release Announcement Discussion
         uses: actions/github-script@v8
         with:
           script: |
@@ -51,12 +52,41 @@ jobs:
             **Automated release notification** • [DependabotSecureFlow](https://github.com/EthanThePhoenix38/dependabot-secure-flow)
             `;
             
-            await github.rest.issues.create({
+            // Get the Announcements category ID (you may need to adjust this)
+            const categories = await github.rest.discussions.listCategories({
               owner: context.repo.owner,
-              repo: context.repo.repo,
+              repo: context.repo.repo
+            });
+            
+            // Find the Announcements category (or General if Announcements doesn't exist)
+            const announcementCategory = categories.data.find(cat => 
+              cat.name === 'Announcements' || cat.name === 'General'
+            );
+            
+            if (!announcementCategory) {
+              console.log('No suitable discussion category found. Skipping discussion creation.');
+              return;
+            }
+            
+            // Create a discussion instead of an issue
+            await github.graphql(`
+              mutation($repositoryId: ID!, $categoryId: ID!, $title: String!, $body: String!) {
+                createDiscussion(input: {
+                  repositoryId: $repositoryId
+                  categoryId: $categoryId
+                  title: $title
+                  body: $body
+                }) {
+                  discussion {
+                    url
+                  }
+                }
+              }
+            `, {
+              repositoryId: context.payload.repository.node_id,
+              categoryId: announcementCategory.node_id,
               title: `📦 Release ${release.tag_name} Published`,
-              body: body,
-              labels: ['release', 'announcement']
+              body: body
             });
 
       - name: Send Summary
@@ -66,4 +96,4 @@ jobs:
           echo "**Version**: ${{ github.event.release.tag_name }}" >> $GITHUB_STEP_SUMMARY
           echo "**URL**: ${{ github.event.release.html_url }}" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "A notification issue has been created in the repository." >> $GITHUB_STEP_SUMMARY
+          echo "A notification discussion has been created in the repository." >> $GITHUB_STEP_SUMMARY

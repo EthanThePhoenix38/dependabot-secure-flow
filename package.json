@@ -1,21 +1,43 @@
 {
-  "name": "dependabot-secure-flow",
-  "version": "1.0.0",
-  "description": "Enterprise-grade GitHub Action for secure dependency management",
-  "main": "index.js",
+  "name": "ai-pulse",
+  "version": "1.1.0",
+  "description": "Curated AI & Cybersecurity news aggregator",
+  "main": "src/aggregator.js",
   "scripts": {
-    "build": "echo 'No build step required for this template' && exit 0",
-    "test": "echo 'Tests passed' && exit 0"
+    "start": "node src/aggregator.js",
+    "dev": "node src/aggregator.js",
+    "build": "echo 'No build step required for this project'",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
-    "github-actions",
-    "security",
-    "dependabot",
-    "automation"
+    "AI",
+    "cybersecurity",
+    "news",
+    "aggregator",
+    "rss",
+    "iOT",
+    "Tech"
   ],
-  "author": "EthanThePhoenix38",
+  "author": "ThePhoenixAgency",
   "license": "MIT",
+  "dependencies": {
+    "@mozilla/readability": "^0.6.0",
+    "@octokit/rest": "^22.0.1",
+    "axios": "^1.13.4",
+    "cheerio": "^1.2.0",
+    "cors": "^2.8.6",
+    "dompurify": "^3.3.1",
+    "express": "^5.2.1",
+    "isomorphic-dompurify": "^2.35.0",
+    "jimp": "^1.6.0",
+    "jsdom": "^27.4.0",
+    "rss-parser": "^3.13.0",
+    "sanitize-html": "^2.17.0"
+  },
   "devDependencies": {
     "prettier": "^3.8.1"
+  },
+  "engines": {
+    "node": ">=20.0.0"
   }
 }

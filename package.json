@@ -30,7 +30,7 @@
     "express": "^5.2.1",
     "isomorphic-dompurify": "^2.35.0",
     "jimp": "^1.6.0",
-    "jsdom": "^27.4.0",
+    "jsdom": "^28.0.0",
     "rss-parser": "^3.13.0",
     "sanitize-html": "^2.17.0"
   },

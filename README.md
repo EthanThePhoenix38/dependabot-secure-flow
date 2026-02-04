@@ -1,3 +1,16 @@
+<div align="center">
+  <img src="./banner.png" width="600px" alt="DependabotSecureFlow Banner" style="border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.5);">
+  <br><br>
+  
+  [![Use this template](https://img.shields.io/badge/Use%20this%20Template-2ea44f?style=for-the-badge&logo=github)](https://github.com/EthanThePhoenix38/dependabot-secure-flow/generate)
+  [![GitHub Marketplace](https://img.shields.io/badge/Marketplace-Dependabot%20Secure%20Flow-blue?style=for-the-badge&logo=github)](https://github.com/marketplace/actions/dependabotsecureflow)
+  [![Build Status](https://img.shields.io/github/actions/workflow/status/EthanThePhoenix38/dependabot-secure-flow/dependabot-secure-flow.yaml?style=for-the-badge)](https://github.com/EthanThePhoenix38/dependabot-secure-flow/actions)
+  [![Dependabot](https://img.shields.io/badge/Dependabot-Active-025E8C?style=for-the-badge&logo=dependabot&logoColor=white)](https://github.com/EthanThePhoenix38/dependabot-secure-flow/network/dependencies)
+  [![YAML](https://img.shields.io/badge/YAML-CB171E?style=for-the-badge&logo=yaml&logoColor=white)](https://github.com/EthanThePhoenix38/dependabot-secure-flow)  [![Tests](https://img.shields.io/badge/Tests-Passing-green?style=for-the-badge&logo=github-actions&logoColor=white)](https://github.com/EthanThePhoenix38/dependabot-secure-flow/actions)  [![MIT License](https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge)](https://choosealicense.com/licenses/mit/)  [![GitHub release](https://img.shields.io/github/v/release/EthanThePhoenix38/dependabot-secure-flow?style=for-the-badge)](https://github.com/EthanThePhoenix38/dependabot-secure-flow/releases)  [![Security](https://img.shields.io/badge/Security-Hardened-yellow?style=for-the-badge&logo=security)](https://github.com/EthanThePhoenix38/dependabot-secure-flow/security)
+  [![RGPD](https://img.shields.io/badge/RGPD-Compliant-blue?style=for-the-badge&logo=gdpr&logoColor=white)](https://github.com/EthanThePhoenix38/dependabot-secure-flow)
+
+</div>
+
 # Dependabot Secure Flow
 
 > Automated dependency management with security-first batch processing
@@ -145,6 +158,16 @@ When the workflow runs successfully:
 🎉 Created PR #42: chore: dependency updates batch
 ```
 
+## Configuration Options
+
+| Input | Description | Required | Default |
+| :--- | :--- | :--- | :--- |
+| `github-token` | Token to manage PRs (GITHUB_TOKEN) | Yes | N/A |
+| `node-version` | Node versions to use | No | 20 |
+| `test-command` | Command to run for validation | No | `npm install && npm run build` |
+
+---
+
 ## 🤝 Contributing
 
 Contributions are welcome! This action is maintained in the [AI-Pulse](https://github.com/ThePhoenixAgency/AI-Pulse) repository and automatically synced here.
@@ -158,6 +181,36 @@ MIT License - see [LICENSE](LICENSE) for details
 - [GitHub Marketplace](https://github.com/marketplace/actions/dependabotsecureflow)
 - [Source Repository](https://github.com/EthanThePhoenix38/dependabot-secure-flow)
 - [Issue Tracker](https://github.com/EthanThePhoenix38/dependabot-secure-flow/issues)
+
+
+---
+
+## Support This Project
+
+If this action helps secure your projects, support the development:
+
+[![GitHub Sponsors](https://img.shields.io/badge/Sponsor_on-GitHub-ea4aaa?style=for-the-badge&logo=github)](https://github.com/sponsors/EthanThePhoenix38)
+[![Patreon](https://img.shields.io/badge/Support_on-Patreon-F96854?style=for-the-badge&logo=patreon)](https://patreon.com/EthanThePhoenix)
+[![PayPal](https://img.shields.io/badge/Support_via-PayPal-00457C?style=for-the-badge&logo=paypal)](https://www.paypal.com/paypalme/VanessaBernier)
+[![Ko-fi](https://img.shields.io/badge/Support_on-Ko--fi-F16061?style=for-the-badge&logo=ko-fi)](https://ko-fi.com/EthanThePhoenix)
+
+
+[![Support via Patreon](https://img.shields.io/badge/Patreon-Support%20Development-f96854?logo=patreon&logoColor=white)](https://www.patreon.com/EthanThePhoenix)
+
+**Your support helps fund the server and AI development!**
+In exchange, I will add a link to your GitHub profile in the Contributors section.
+
+You can also :
+
+- ⭐ **Star this repository**
+- 🐛 **Report issues** to help improve it
+- 🔀 **Fork it** to customize for your needs
+- 🐛 **Report issues** to help improve it
+
+---
+
+## Professional Page
+[https://thephoenixagency.github.io](https://thephoenixagency.github.io)
 
 ---
 

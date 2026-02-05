@@ -137,7 +137,7 @@
 
         async function loadContent() {
             // ... (Le script JS reste identique à la version précédente) ...
-            const apiUrl = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}`;
+            const apiUrl = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}?ref=${BRANCH}`;
 
             try {
                 const response = await fetch(apiUrl, {

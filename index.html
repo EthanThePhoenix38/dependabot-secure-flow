@@ -137,12 +137,10 @@
 
         async function loadContent() {
             // ... (Le script JS reste identique à la version précédente) ...
-            const apiUrl = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}?ref=${BRANCH}`;
+            const rawUrl = `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/${BRANCH}/${FILE_PATH}`;
 
             try {
-                const response = await fetch(apiUrl, {
-                    headers: { 'Accept': 'application/vnd.github.raw' }
-                });
+                const response = await fetch(rawUrl);
 
                 if (!response.ok) {
                     if (response.status === 404) throw new Error('File not found. Check repo/branch settings.');

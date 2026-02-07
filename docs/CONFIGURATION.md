@@ -29,13 +29,22 @@ dependabot-secure-flow/
 
 ```mermaid
 flowchart TD
-    A[Dependabot crée PR] --> B{Build OK?}
-    B -->|Non| C[PR fermée automatiquement]
-    B -->|Oui| D[Merge vers securite]
-    D --> E[PR créée: securite → main]
-    E --> F[Review manuelle]
-    F --> G[Merge vers main]
-    G --> H[Déploiement GitHub Pages]
+    subgraph Dependabot["Flux Dependabot (automatique)"]
+        A[Dependabot crée PR] --> B{Build OK?}
+        B -->|Non| C[PR fermée]
+        B -->|Oui| D[Merge → securite]
+        D --> E[PR: securite → main]
+    end
+
+    subgraph Dev["Flux Développement (manuel)"]
+        F[Nouvelle feature] --> G[Push → dev]
+        G --> H[PR: dev → main]
+    end
+
+    E --> I[Review manuelle]
+    H --> I
+    I --> J[Merge → main]
+    J --> K[Déploiement GitHub Pages]
 ```
 
 ### Branches
@@ -43,7 +52,15 @@ flowchart TD
 | Branche | Rôle | Déploiement |
 |---------|------|-------------|
 | `main` | Production | GitHub Pages |
-| `securite` | Staging/Validation | - |
+| `dev` | Développement / Améliorations | - |
+| `securite` | Staging Dependabot | - |
+
+### Flux de développement
+
+```
+Améliorations manuelles:  dev → main (via PR)
+Mises à jour Dependabot:  securite → main (automatique)
+```
 
 ---
 

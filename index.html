@@ -109,11 +109,9 @@
         }
     </style>
     <!-- Marked for Markdown Parsing -->
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/marked@15/marked.min.js"></script>
     <!-- DOMPurify for Security -->
-    <script src="https://cdn.jsdelivr.net/npm/dompurify/dist/purify.min.js"></script>
-    <!-- Mermaid for diagrams -->
-    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
 </head>
 
 <body>
@@ -137,7 +135,17 @@
         const FILE_PATH = 'README.md';
         // -------------------------------------------------------
 
-        mermaid.initialize({ startOnLoad: false, theme: 'default' });
+        async function loadMermaid() {
+            if (window.mermaid) return;
+            await new Promise((resolve, reject) => {
+                const script = document.createElement('script');
+                script.src = 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js';
+                script.onload = resolve;
+                script.onerror = reject;
+                document.head.appendChild(script);
+            });
+            mermaid.initialize({ startOnLoad: false, theme: 'default' });
+        }
 
         async function loadContent() {
             const rawUrl = `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/${BRANCH}/${FILE_PATH}`;
@@ -165,14 +173,18 @@
                 document.getElementById('loader').style.display = 'none';
                 contentDiv.style.display = 'block';
 
-                contentDiv.querySelectorAll('code.language-mermaid').forEach(function(codeEl) {
-                    const pre = codeEl.parentElement;
-                    const div = document.createElement('pre');
-                    div.className = 'mermaid';
-                    div.textContent = codeEl.textContent;
-                    pre.replaceWith(div);
-                });
-                await mermaid.run({ nodes: contentDiv.querySelectorAll('.mermaid') });
+                const mermaidBlocks = contentDiv.querySelectorAll('code.language-mermaid');
+                if (mermaidBlocks.length > 0) {
+                    mermaidBlocks.forEach(function(codeEl) {
+                        const pre = codeEl.parentElement;
+                        const div = document.createElement('pre');
+                        div.className = 'mermaid';
+                        div.textContent = codeEl.textContent;
+                        pre.replaceWith(div);
+                    });
+                    await loadMermaid();
+                    await mermaid.run({ nodes: contentDiv.querySelectorAll('.mermaid') });
+                }
 
             } catch (error) {
                 document.getElementById('loader').innerHTML = `
@@ -185,7 +197,7 @@
             }
         }
 
-        loadContent();
+        document.addEventListener('DOMContentLoaded', loadContent);
     </script>
 
 </body>

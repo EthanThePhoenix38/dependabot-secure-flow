@@ -29,6 +29,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     # Force serial execution to prevent conflicts
     concurrency:
       group: secure-flow-merge
@@ -65,14 +66,28 @@ jobs:
     - name: Close and Delete Dependabot Branch
       if: ${{ github.actor == 'dependabot[bot]' || startsWith(github.head_ref, 'dependabot/') }}
       run: |
+        gh_retry() {
+          local tries=0
+          local max=5
+          local delay=2
+          while ! "$@"; do
+            tries=$((tries + 1))
+            if [ "$tries" -ge "$max" ]; then
+              return 1
+            fi
+            sleep "$delay"
+            delay=$((delay * 2))
+          done
+        }
         echo "Closing PR #${{ github.event.pull_request.number }} and deleting branch..."
-        gh pr close ${{ github.event.pull_request.number }} --delete-branch --comment "✅ Merged into **dependencies** branch for batch processing."
+        gh_retry gh pr close ${{ github.event.pull_request.number }} --delete-branch --comment "Merged into **dependencies** branch for batch processing." || true
 
   create-pr-to-main:
     needs: auto-merge-to-dependencies
     runs-on: ubuntu-latest
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     steps:
     - name: Checkout repository
@@ -108,19 +123,45 @@ jobs:
     - name: Check if PR already exists
       id: check-pr
       run: |
+        gh_retry() {
+          local tries=0
+          local max=5
+          local delay=2
+          while ! "$@"; do
+            tries=$((tries + 1))
+            if [ "$tries" -ge "$max" ]; then
+              return 1
+            fi
+            sleep "$delay"
+            delay=$((delay * 2))
+          done
+        }
         # Target MAIN instead of master
-        PR_COUNT=$(gh pr list --base main --head dependencies --state open --json number | jq 'length')
+        PR_COUNT=$(gh_retry gh pr list --base main --head dependencies --state open --json number | jq 'length')
         echo "pr_count=$PR_COUNT" >> $GITHUB_OUTPUT
 
     - name: Create PR from dependencies to main
       if: steps.check-pr.outputs.pr_count == '0'
       run: |
+        gh_retry() {
+          local tries=0
+          local max=5
+          local delay=2
+          while ! "$@"; do
+            tries=$((tries + 1))
+            if [ "$tries" -ge "$max" ]; then
+              return 1
+            fi
+            sleep "$delay"
+            delay=$((delay * 2))
+          done
+        }
         git config --global user.name 'github-actions[bot]'
         # Check commits between main and dependencies
         NEW_COMMITS=$(git log main..dependencies --oneline | wc -l)
 
         if [ "$NEW_COMMITS" -gt 0 ]; then
-          gh pr create \
+          gh_retry gh pr create \
             --base main \
             --head dependencies \
             --title "chore: dependency updates batch" \
@@ -130,11 +171,24 @@ jobs:
 
     - name: Enable auto-merge for dependencies PR
       run: |
-        PR_NUMBER=$(gh pr list --base main --head dependencies --state open --json number --jq '.[0].number // empty')
+        gh_retry() {
+          local tries=0
+          local max=5
+          local delay=2
+          while ! "$@"; do
+            tries=$((tries + 1))
+            if [ "$tries" -ge "$max" ]; then
+              return 1
+            fi
+            sleep "$delay"
+            delay=$((delay * 2))
+          done
+        }
+        PR_NUMBER=$(gh_retry gh pr list --base main --head dependencies --state open --json number --jq '.[0].number // empty')
         if [ -n "$PR_NUMBER" ]; then
-          MERGEABLE=$(gh pr view "$PR_NUMBER" --json mergeable --jq '.mergeable')
+          MERGEABLE=$(gh_retry gh pr view "$PR_NUMBER" --json mergeable --jq '.mergeable')
           if [ "$MERGEABLE" = "MERGEABLE" ]; then
-            gh pr merge "$PR_NUMBER" --auto --squash || true
+            gh_retry gh pr merge "$PR_NUMBER" --auto --squash || true
           else
             echo "PR #$PR_NUMBER not mergeable yet ($MERGEABLE). Waiting for conflict resolution/checks."
           fi
@@ -169,11 +223,25 @@ jobs:
       if: always()
       env:
          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
+        gh_retry() {
+          local tries=0
+          local max=5
+          local delay=2
+          while ! "$@"; do
+            tries=$((tries + 1))
+            if [ "$tries" -ge "$max" ]; then
+              return 1
+            fi
+            sleep "$delay"
+            delay=$((delay * 2))
+          done
+        }
         if [ "${{ steps.validate.outcome }}" == "failure" ]; then
           if [ "${{ github.event.pull_request.number }}" != "" ]; then
-             gh pr edit ${{ github.event.pull_request.number }} --add-label "skipped-vulnerability"
-             gh pr close ${{ github.event.pull_request.number }} --comment "🚫 **Auto-Correction**: Build validation failed. Closing PR." --delete-branch || true
+             gh_retry gh pr edit ${{ github.event.pull_request.number }} --add-label "skipped-vulnerability" || true
+             gh_retry gh pr close ${{ github.event.pull_request.number }} --comment "Auto-Correction: Build validation failed. Closing PR." --delete-branch || true
           fi
           echo "result=false" >> $GITHUB_OUTPUT
         else

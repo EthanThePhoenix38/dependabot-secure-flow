@@ -8,6 +8,7 @@ updates:
   # NPM dependencies (Node.js packages)
   - package-ecosystem: "npm"
     directory: "/"
+    target-branch: "dependencies"
     schedule:
       # Run twice daily at 06:00 and 18:00 UTC
       interval: "daily"
@@ -35,6 +36,7 @@ updates:
   # GitHub Actions workflows
   - package-ecosystem: "github-actions"
     directory: "/"
+    target-branch: "dependencies"
     schedule:
       interval: "daily"
       time: "18:00"

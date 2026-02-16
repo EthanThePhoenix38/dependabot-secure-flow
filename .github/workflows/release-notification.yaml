@@ -41,7 +41,7 @@ jobs:
 
             \`\`\`yaml
             jobs:
-              auto-merge-to-securite:
+              auto-merge-to-security:
                 uses: EthanThePhoenix38/dependabot-secure-flow/.github/workflows/dependabot-secure-flow.yml@${release.tag_name}
                 secrets: inherit
             \`\`\`

@@ -25,7 +25,7 @@ permissions:
   issues: write
 
 jobs:
-  auto-merge-to-securite:
+  auto-merge-to-security:
     runs-on: ubuntu-latest
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -42,12 +42,12 @@ jobs:
       with:
         fetch-depth: 0
 
-    - name: Ensure securite branch exists
+    - name: Ensure security branch exists
       run: |
-        git fetch origin securite 2>/dev/null || git switch --create securite
-        git push origin securite || true
+        git fetch origin security 2>/dev/null || git switch --create security
+        git push origin security || true
 
-    - name: Merge dependabot changes to securite branch
+    - name: Merge dependabot changes to security branch
       run: |
         git config --global user.name 'github-actions[bot]'
         git config --global user.email 'github-actions[bot]@users.noreply.github.com'
@@ -55,21 +55,21 @@ jobs:
         # Fetch the PR branch
         git fetch origin ${{ github.head_ref }}:${{ github.head_ref }} || true
 
-        # Switch to securite and merge
-        git switch securite
+        # Switch to security and merge
+        git switch security
         git merge origin/${{ github.head_ref }} --no-edit || true
 
-        # Push to securite
-        git push origin securite
+        # Push to security
+        git push origin security
 
     - name: Close and Delete Dependabot Branch
       if: ${{ github.actor == 'dependabot[bot]' || startsWith(github.head_ref, 'dependabot/') }}
       run: |
         echo "Closing PR #${{ github.event.pull_request.number }} and deleting branch..."
-        gh pr close ${{ github.event.pull_request.number }} --delete-branch --comment "✅ Merged into **securite** branch for batch processing."
+        gh pr close ${{ github.event.pull_request.number }} --delete-branch --comment "✅ Merged into **security** branch for batch processing."
 
   create-pr-to-main:
-    needs: auto-merge-to-securite
+    needs: auto-merge-to-security
     runs-on: ubuntu-latest
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -78,7 +78,7 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
       with:
-        ref: securite
+        ref: security
         fetch-depth: 0
 
     - name: Update Documentation Timestamp
@@ -102,29 +102,29 @@ jobs:
           echo "No documentation changes needed."
         else
           git commit -m "docs: update release timestamp and changelog"
-          git push origin securite
+          git push origin security
         fi
 
     - name: Check if PR already exists
       id: check-pr
       run: |
         # Target MAIN instead of master
-        PR_COUNT=$(gh pr list --base main --head securite --state open --json number | jq 'length')
+        PR_COUNT=$(gh pr list --base main --head security --state open --json number | jq 'length')
         echo "pr_count=$PR_COUNT" >> $GITHUB_OUTPUT
 
-    - name: Create PR from securite to main
+    - name: Create PR from security to main
       if: steps.check-pr.outputs.pr_count == '0'
       run: |
         git config --global user.name 'github-actions[bot]'
-        # Check commits between main and securite
-        NEW_COMMITS=$(git log main..securite --oneline | wc -l)
+        # Check commits between main and security
+        NEW_COMMITS=$(git log main..security --oneline | wc -l)
 
         if [ "$NEW_COMMITS" -gt 0 ]; then
           gh pr create \
             --base main \
-            --head securite \
+            --head security \
             --title "chore: dependency updates batch" \
-            --body "Automated dependency updates validated in the securite branch." \
+            --body "Automated dependency updates validated in the security branch." \
             --label "dependencies" \
             --label "automated" || echo "PR already exists"
         fi

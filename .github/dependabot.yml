@@ -1,7 +1,6 @@
-# Dependabot configuration for AI-Pulse
-# Auto-updates dependencies 2x per day with security focus
+# Dependabot configuration for DependabotSecureFlow
+# Auto-updates dependencies daily at midnight UTC
 # Author: ThePhoenixAgency
-# Security: Ensures 0 vulnerabilities through automated updates
 
 version: 2
 updates:
@@ -10,25 +9,20 @@ updates:
     directory: "/"
     target-branch: "dependencies"
     schedule:
-      # Run twice daily at 06:00 and 18:00 UTC
       interval: "daily"
-      time: "06:00"
+      time: "00:00"
       timezone: "UTC"
-    # Security-focused update strategy
     open-pull-requests-limit: 10
     reviewers:
       - "ThePhoenixAgency"
     labels:
       - "dependencies"
       - "security"
-    # Semantic versioning strategy
     versioning-strategy: "increase"
-    # Commit message prefix
     commit-message:
       prefix: "chore: "
       prefix-development: "chore: "
       include: "scope"
-    # Allow both direct and indirect updates
     allow:
       - dependency-type: "all"
 
@@ -38,7 +32,7 @@ updates:
     target-branch: "dependencies"
     schedule:
       interval: "daily"
-      time: "18:00"
+      time: "00:00"
       timezone: "UTC"
     open-pull-requests-limit: 5
     reviewers:

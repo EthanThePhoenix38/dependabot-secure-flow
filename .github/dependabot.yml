@@ -19,7 +19,6 @@ updates:
       - "ThePhoenixAgency"
     labels:
       - "dependencies"
-      - "auto-merge"
       - "security"
     # Semantic versioning strategy
     versioning-strategy: "increase"
@@ -44,7 +43,7 @@ updates:
       - "ThePhoenixAgency"
     labels:
       - "github-actions"
-      - "auto-merge"
+      - "security"
     commit-message:
       prefix: "ci: "
       include: "scope"

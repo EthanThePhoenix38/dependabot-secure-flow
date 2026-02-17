@@ -25,10 +25,11 @@ permissions:
   issues: write
 
 jobs:
-  auto-merge-to-securite:
+  auto-merge-to-dependencies:
     runs-on: ubuntu-latest
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     # Force serial execution to prevent conflicts
     concurrency:
       group: secure-flow-merge
@@ -42,12 +43,12 @@ jobs:
       with:
         fetch-depth: 0
 
-    - name: Ensure securite branch exists
+    - name: Ensure dependencies branch exists
       run: |
-        git fetch origin securite 2>/dev/null || git switch --create securite
-        git push origin securite || true
+        git fetch origin dependencies 2>/dev/null || git switch --create dependencies
+        git push origin dependencies || true
 
-    - name: Merge dependabot changes to securite branch
+    - name: Merge dependabot changes to dependencies branch
       run: |
         git config --global user.name 'github-actions[bot]'
         git config --global user.email 'github-actions[bot]@users.noreply.github.com'
@@ -55,30 +56,44 @@ jobs:
         # Fetch the PR branch
         git fetch origin ${{ github.head_ref }}:${{ github.head_ref }} || true
 
-        # Switch to securite and merge
-        git switch securite
+        # Switch to dependencies and merge
+        git switch dependencies
         git merge origin/${{ github.head_ref }} --no-edit || true
 
-        # Push to securite
-        git push origin securite
+        # Push to dependencies
+        git push origin dependencies
 
     - name: Close and Delete Dependabot Branch
       if: ${{ github.actor == 'dependabot[bot]' || startsWith(github.head_ref, 'dependabot/') }}
       run: |
+        gh_retry() {
+          local tries=0
+          local max=5
+          local delay=2
+          while ! "$@"; do
+            tries=$((tries + 1))
+            if [ "$tries" -ge "$max" ]; then
+              return 1
+            fi
+            sleep "$delay"
+            delay=$((delay * 2))
+          done
+        }
         echo "Closing PR #${{ github.event.pull_request.number }} and deleting branch..."
-        gh pr close ${{ github.event.pull_request.number }} --delete-branch --comment "✅ Merged into **securite** branch for batch processing."
+        gh_retry gh pr close ${{ github.event.pull_request.number }} --delete-branch --comment "Merged into **dependencies** branch for batch processing." || true
 
   create-pr-to-main:
-    needs: auto-merge-to-securite
+    needs: auto-merge-to-dependencies
     runs-on: ubuntu-latest
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
       with:
-        ref: securite
+        ref: dependencies
         fetch-depth: 0
 
     - name: Update Documentation Timestamp
@@ -102,31 +117,81 @@ jobs:
           echo "No documentation changes needed."
         else
           git commit -m "docs: update release timestamp and changelog"
-          git push origin securite
+          git push origin dependencies
         fi
 
     - name: Check if PR already exists
       id: check-pr
       run: |
+        gh_retry() {
+          local tries=0
+          local max=5
+          local delay=2
+          while ! "$@"; do
+            tries=$((tries + 1))
+            if [ "$tries" -ge "$max" ]; then
+              return 1
+            fi
+            sleep "$delay"
+            delay=$((delay * 2))
+          done
+        }
         # Target MAIN instead of master
-        PR_COUNT=$(gh pr list --base main --head securite --state open --json number | jq 'length')
+        PR_COUNT=$(gh_retry gh pr list --base main --head dependencies --state open --json number | jq 'length')
         echo "pr_count=$PR_COUNT" >> $GITHUB_OUTPUT
 
-    - name: Create PR from securite to main
+    - name: Create PR from dependencies to main
       if: steps.check-pr.outputs.pr_count == '0'
       run: |
+        gh_retry() {
+          local tries=0
+          local max=5
+          local delay=2
+          while ! "$@"; do
+            tries=$((tries + 1))
+            if [ "$tries" -ge "$max" ]; then
+              return 1
+            fi
+            sleep "$delay"
+            delay=$((delay * 2))
+          done
+        }
         git config --global user.name 'github-actions[bot]'
-        # Check commits between main and securite
-        NEW_COMMITS=$(git log main..securite --oneline | wc -l)
+        # Check commits between main and dependencies
+        NEW_COMMITS=$(git log main..dependencies --oneline | wc -l)
 
         if [ "$NEW_COMMITS" -gt 0 ]; then
-          gh pr create \
+          gh_retry gh pr create \
             --base main \
-            --head securite \
+            --head dependencies \
             --title "chore: dependency updates batch" \
-            --body "Automated dependency updates validated in the securite branch." \
-            --label "dependencies" \
-            --label "automated" || echo "PR already exists"
+            --body "Automated dependency updates validated in the dependencies branch." \
+            --label "dependencies" || echo "PR already exists"
+        fi
+
+    - name: Enable auto-merge for dependencies PR
+      run: |
+        gh_retry() {
+          local tries=0
+          local max=5
+          local delay=2
+          while ! "$@"; do
+            tries=$((tries + 1))
+            if [ "$tries" -ge "$max" ]; then
+              return 1
+            fi
+            sleep "$delay"
+            delay=$((delay * 2))
+          done
+        }
+        PR_NUMBER=$(gh_retry gh pr list --base main --head dependencies --state open --json number --jq '.[0].number // empty')
+        if [ -n "$PR_NUMBER" ]; then
+          MERGEABLE=$(gh_retry gh pr view "$PR_NUMBER" --json mergeable --jq '.mergeable')
+          if [ "$MERGEABLE" = "MERGEABLE" ]; then
+            gh_retry gh pr merge "$PR_NUMBER" --auto --squash || true
+          else
+            echo "PR #$PR_NUMBER not mergeable yet ($MERGEABLE). Waiting for conflict resolution/checks."
+          fi
         fi
 
   check-interdependencies:
@@ -158,11 +223,25 @@ jobs:
       if: always()
       env:
          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
+        gh_retry() {
+          local tries=0
+          local max=5
+          local delay=2
+          while ! "$@"; do
+            tries=$((tries + 1))
+            if [ "$tries" -ge "$max" ]; then
+              return 1
+            fi
+            sleep "$delay"
+            delay=$((delay * 2))
+          done
+        }
         if [ "${{ steps.validate.outcome }}" == "failure" ]; then
           if [ "${{ github.event.pull_request.number }}" != "" ]; then
-             gh pr edit ${{ github.event.pull_request.number }} --add-label "skipped-vulnerability"
-             gh pr close ${{ github.event.pull_request.number }} --comment "🚫 **Auto-Correction**: Build validation failed. Closing PR." --delete-branch || true
+             gh_retry gh pr edit ${{ github.event.pull_request.number }} --add-label "skipped-vulnerability" || true
+             gh_retry gh pr close ${{ github.event.pull_request.number }} --comment "Auto-Correction: Build validation failed. Closing PR." --delete-branch || true
           fi
           echo "result=false" >> $GITHUB_OUTPUT
         else

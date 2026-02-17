@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [v1.0.6] - 2026-02-17
+### Changed
+- Automated sync from AI-Pulse repository
+- Updated workflow files and configurations
+
+
 ## [v1.0.5] - 2026-02-16
 ### Changed
 - Automated sync from AI-Pulse repository

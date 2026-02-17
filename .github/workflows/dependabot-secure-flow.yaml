@@ -25,7 +25,7 @@ permissions:
   issues: write
 
 jobs:
-  auto-merge-to-dependencies:
+  auto-merge-to-security:
     runs-on: ubuntu-latest
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -43,12 +43,12 @@ jobs:
       with:
         fetch-depth: 0
 
-    - name: Ensure dependencies branch exists
+    - name: Ensure security branch exists
       run: |
-        git fetch origin dependencies 2>/dev/null || git switch --create dependencies
-        git push origin dependencies || true
+        git fetch origin security 2>/dev/null || git switch --create security
+        git push origin security || true
 
-    - name: Merge dependabot changes to dependencies branch
+    - name: Merge dependabot changes to security branch
       run: |
         git config --global user.name 'github-actions[bot]'
         git config --global user.email 'github-actions[bot]@users.noreply.github.com'
@@ -56,12 +56,12 @@ jobs:
         # Fetch the PR branch
         git fetch origin ${{ github.head_ref }}:${{ github.head_ref }} || true
 
-        # Switch to dependencies and merge
-        git switch dependencies
+        # Switch to security and merge
+        git switch security
         git merge origin/${{ github.head_ref }} --no-edit || true
 
-        # Push to dependencies
-        git push origin dependencies
+        # Push to security
+        git push origin security
 
     - name: Close and Delete Dependabot Branch
       if: ${{ github.actor == 'dependabot[bot]' || startsWith(github.head_ref, 'dependabot/') }}
@@ -80,10 +80,10 @@ jobs:
           done
         }
         echo "Closing PR #${{ github.event.pull_request.number }} and deleting branch..."
-        gh_retry gh pr close ${{ github.event.pull_request.number }} --delete-branch --comment "Merged into **dependencies** branch for batch processing." || true
+        gh pr close ${{ github.event.pull_request.number }} --delete-branch --comment "✅ Merged into **security** branch for batch processing."
 
   create-pr-to-main:
-    needs: auto-merge-to-dependencies
+    needs: auto-merge-to-security
     runs-on: ubuntu-latest
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -93,7 +93,7 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
       with:
-        ref: dependencies
+        ref: security
         fetch-depth: 0
 
     - name: Update Documentation Timestamp
@@ -117,7 +117,7 @@ jobs:
           echo "No documentation changes needed."
         else
           git commit -m "docs: update release timestamp and changelog"
-          git push origin dependencies
+          git push origin security
         fi
 
     - name: Check if PR already exists
@@ -137,10 +137,10 @@ jobs:
           done
         }
         # Target MAIN instead of master
-        PR_COUNT=$(gh_retry gh pr list --base main --head dependencies --state open --json number | jq 'length')
+        PR_COUNT=$(gh pr list --base main --head security --state open --json number | jq 'length')
         echo "pr_count=$PR_COUNT" >> $GITHUB_OUTPUT
 
-    - name: Create PR from dependencies to main
+    - name: Create PR from security to main
       if: steps.check-pr.outputs.pr_count == '0'
       run: |
         gh_retry() {
@@ -157,41 +157,17 @@ jobs:
           done
         }
         git config --global user.name 'github-actions[bot]'
-        # Check commits between main and dependencies
-        NEW_COMMITS=$(git log main..dependencies --oneline | wc -l)
+        # Check commits between main and security
+        NEW_COMMITS=$(git log main..security --oneline | wc -l)
 
         if [ "$NEW_COMMITS" -gt 0 ]; then
           gh_retry gh pr create \
             --base main \
-            --head dependencies \
+            --head security \
             --title "chore: dependency updates batch" \
-            --body "Automated dependency updates validated in the dependencies branch." \
-            --label "dependencies" || echo "PR already exists"
-        fi
-
-    - name: Enable auto-merge for dependencies PR
-      run: |
-        gh_retry() {
-          local tries=0
-          local max=5
-          local delay=2
-          while ! "$@"; do
-            tries=$((tries + 1))
-            if [ "$tries" -ge "$max" ]; then
-              return 1
-            fi
-            sleep "$delay"
-            delay=$((delay * 2))
-          done
-        }
-        PR_NUMBER=$(gh_retry gh pr list --base main --head dependencies --state open --json number --jq '.[0].number // empty')
-        if [ -n "$PR_NUMBER" ]; then
-          MERGEABLE=$(gh_retry gh pr view "$PR_NUMBER" --json mergeable --jq '.mergeable')
-          if [ "$MERGEABLE" = "MERGEABLE" ]; then
-            gh_retry gh pr merge "$PR_NUMBER" --auto --squash || true
-          else
-            echo "PR #$PR_NUMBER not mergeable yet ($MERGEABLE). Waiting for conflict resolution/checks."
-          fi
+            --body "Automated dependency updates validated in the security branch." \
+            --label "dependencies" \
+            --label "automated" || echo "PR already exists"
         fi
 
   check-interdependencies:

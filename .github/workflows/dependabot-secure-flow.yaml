@@ -43,12 +43,25 @@ jobs:
       with:
         fetch-depth: 0
 
-    - name: Ensure security branch exists
+    - name: Ensure security branch exists and is up to date
       run: |
-        git fetch origin security 2>/dev/null || git switch --create security
-        git push origin security || true
+        git fetch origin main
+        if git fetch origin security 2>/dev/null; then
+          # Security branch exists, check if it's behind main
+          git checkout security
+          BEHIND=$(git rev-list --count HEAD..origin/main)
+          if [ "$BEHIND" -gt 50 ]; then
+            echo "Security branch is $BEHIND commits behind main. Resetting to main..."
+            git reset --hard origin/main
+          fi
+        else
+          # Security branch doesn't exist, create from main
+          echo "Creating security branch from main..."
+          git checkout -b security origin/main
+        fi
+        git push origin security --force-with-lease || git push origin security || true
 
-    - name: Merge dependabot changes to dependencies branch
+    - name: Merge dependabot changes to security branch
       run: |
         git config --global user.name 'github-actions[bot]'
         git config --global user.email 'github-actions[bot]@users.noreply.github.com'
@@ -56,9 +69,16 @@ jobs:
         # Fetch the PR branch
         git fetch origin ${{ github.head_ref }}:${{ github.head_ref }} || true
 
-        # Switch to security and merge
-        git switch security
-        git merge origin/${{ github.head_ref }} --no-edit || true
+        # Switch to security branch
+        git checkout security || git checkout -b security origin/main
+
+        # Try to merge, abort if conflicts
+        if ! git merge origin/${{ github.head_ref }} --no-edit; then
+          echo "Merge conflict detected, aborting and retrying with main as base..."
+          git merge --abort || true
+          git reset --hard origin/main
+          git merge origin/${{ github.head_ref }} --no-edit || true
+        fi
 
         # Push to security
         git push origin security

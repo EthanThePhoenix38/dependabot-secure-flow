@@ -13,11 +13,10 @@ updates:
       # Run twice daily at 06:00 and 18:00 UTC
       interval: "daily"
       time: "06:00"
-      timezone: "UTC"
+      timezone: "Etc/UTC"
     # Security-focused update strategy
     open-pull-requests-limit: 10
-    reviewers:
-      - "ThePhoenixAgency"
+    # 'reviewers' is not a valid property in Dependabot config; removed
     labels:
       - "dependencies"
       - "auto-merge"
@@ -40,10 +39,9 @@ updates:
     schedule:
       interval: "daily"
       time: "18:00"
-      timezone: "UTC"
+      timezone: "Etc/UTC"
     open-pull-requests-limit: 5
-    reviewers:
-      - "ThePhoenixAgency"
+    # 'reviewers' is not a valid property in Dependabot config; removed
     labels:
       - "github-actions"
       - "auto-merge"

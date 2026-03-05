@@ -1,18 +1,18 @@
 # =============================================================================
 # DEPENDABOT - Configuration AI-Pulse
 # =============================================================================
-# Auteur       : ThePhoenixAgency
-# Mise à jour  : 5 Mars 2026
-# Version      : 2.1.0
+# Auteur      : ThePhoenixAgency
+# Mise à jour : 5 Mars 2026
+# Version     : 2.1.0
 #
 # DESCRIPTION :
 # Dependabot surveille automatiquement les dépendances NPM et GitHub Actions.
 # Il crée des Pull Requests vers la branche "security" dès qu'une mise à jour
-# est disponible. Les PRs sont ensuite mergées sur "main" manuellement ou
-# via auto-merge, après validation.
+# est disponible. Les PRs sont mergées automatiquement sur "main" via auto-merge,
+# de façon silencieuse, sans validation ni intervention manuelle.
 #
 # LOGIQUE DE BRANCHEMENT :
-# Dependabot -> PR sur "security" -> merge sur "main"
+# Dependabot -> PR sur "security" -> auto-merge silencieux sur "main"
 # La branche "security" isole les mises à jour de dépendances du code métier.
 #
 # ANTI-CHEVAUCHEMENT :
@@ -28,11 +28,8 @@
 # rebase-strategy: "auto" -> Dependabot rebase sa PR automatiquement
 # en cas de conflit, sans intervention manuelle.
 # =============================================================================
-
 version: 2
-
 updates:
-
   # ---------------------------------------------------------------------------
   # PASSE 1 NPM - 01:30 UTC (creux entre 00h et 03h)
   # ---------------------------------------------------------------------------

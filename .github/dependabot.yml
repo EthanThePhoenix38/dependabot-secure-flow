@@ -7,13 +7,13 @@
 #
 # DESCRIPTION :
 # Dependabot surveille automatiquement les dépendances NPM et GitHub Actions.
-# Il crée des Pull Requests vers "main" dès qu'une mise à jour de sécurité
-# ou de version est disponible.
+# Il crée des Pull Requests vers la branche "security" dès qu'une mise à jour
+# est disponible. Les PRs sont ensuite mergées sur "main" manuellement ou
+# via auto-merge, après validation.
 #
-# PROBLÈME CORRIGÉ :
-# L'ancienne config ciblait "target-branch: security" (branche inexistante).
-# Dependabot ne pouvait donc PAS créer ses PRs -> alertes non traitées.
-# Fix : target-branch pointe maintenant sur "main".
+# LOGIQUE DE BRANCHEMENT :
+# Dependabot -> PR sur "security" -> merge sur "main"
+# La branche "security" isole les mises à jour de dépendances du code métier.
 #
 # ANTI-CHEVAUCHEMENT :
 # Le workflow principal tourne à : 00h, 03h, 06h, 09h, 12h, 15h, 18h, 21h UTC.
@@ -38,7 +38,7 @@ updates:
   # ---------------------------------------------------------------------------
   - package-ecosystem: "npm"
     directory: "/"
-    target-branch: "main"
+    target-branch: "security"
     rebase-strategy: "auto"
     schedule:
       interval: "daily"
@@ -61,7 +61,7 @@ updates:
   # ---------------------------------------------------------------------------
   - package-ecosystem: "npm"
     directory: "/"
-    target-branch: "main"
+    target-branch: "security"
     rebase-strategy: "auto"
     schedule:
       interval: "daily"
@@ -84,7 +84,7 @@ updates:
   # ---------------------------------------------------------------------------
   - package-ecosystem: "npm"
     directory: "/"
-    target-branch: "main"
+    target-branch: "security"
     rebase-strategy: "auto"
     schedule:
       interval: "daily"
@@ -108,7 +108,7 @@ updates:
   # ---------------------------------------------------------------------------
   - package-ecosystem: "github-actions"
     directory: "/"
-    target-branch: "main"
+    target-branch: "security"
     rebase-strategy: "auto"
     schedule:
       interval: "daily"

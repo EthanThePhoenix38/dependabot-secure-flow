@@ -94,7 +94,10 @@ jobs:
         run: |
           echo "## 🎉 Release Published by Phoenix" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Version**: ${{ github.event.release.tag_name }}" >> $GITHUB_STEP_SUMMARY
-          echo "**URL**: ${{ github.event.release.html_url }}" >> $GITHUB_STEP_SUMMARY
+          printf "**Version**: %s\n" "$RELEASE_TAG" >> $GITHUB_STEP_SUMMARY
+          printf "**URL**: %s\n" "$RELEASE_URL" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "A notification discussion has been created in the repository." >> $GITHUB_STEP_SUMMARY
+        env:
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+          RELEASE_URL: ${{ github.event.release.html_url }}
